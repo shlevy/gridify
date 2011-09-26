@@ -17,7 +17,7 @@ module Gridify
       
       unless self.respond_to?(:find_for_grid)
         class_eval <<-EOV
-            named_scope :find_for_grid, lambda {|name, params|
+            scope :find_for_grid, lambda {|name, params|
               grid = grids[name]
               grid.update_from_params( params )
               grid.current_scope
