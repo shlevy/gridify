@@ -24,6 +24,7 @@ module Gridify
       symbolized_params.delete :grid
       symbolized_params.delete :_search
       symbolized_params.delete :nd
+      symbolized_params.delete :action
       self.extra_finder_params = symbolized_params
     end
 
