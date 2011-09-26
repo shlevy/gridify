@@ -21,6 +21,9 @@ module Gridify
       self.sort_order    = symbolized_params.delete :sord if symbolized_params[:sord]
       self.current_page  = symbolized_params.delete(:page).to_i if symbolized_params[:page]
       self.rows_per_page = symbolized_params.delete(:rows).to_i if symbolized_params[:rows]
+      symbolized_params.delete :grid
+      symbolized_params.delete :_search
+      symbolized_params.delete :nd
       self.extra_finder_params = symbolized_params
     end
 
