@@ -14,12 +14,12 @@ module Gridify
     #   :page         page number (starts at 1) ["1"]
       
     def update_from_params( params )
-      params.symbolize_keys!
-      params_to_rules params
-      self.sort_by       = params[:sidx] if params[:sidx]
-      self.sort_order    = params[:sord] if params[:sord]
-      self.current_page  = params[:page].to_i if params[:page]
-      self.rows_per_page = params[:rows].to_i if params[:rows]
+      symbolized_params = params.symbolize_keys
+      params_to_rules symbolized_params
+      self.sort_by       = symbolized_params[:sidx] if symbolized_params[:sidx]
+      self.sort_order    = symbolized_params[:sord] if symbolized_params[:sord]
+      self.current_page  = symbolized_params[:page].to_i if symbolized_params[:page]
+      self.rows_per_page = symbolized_params[:rows].to_i if symbolized_params[:rows]
     end
 
     # return find args (scope) for current settings
