@@ -2,7 +2,8 @@ module Gridify
   class Grid
 
     attr_accessor :search_rules,        # current search/filter rules, as hash
-                  :search_rules_op      # :and, :or 
+                  :search_rules_op,     # :and, :or 
+                  :extra_finder_params
     
     # finds records based on request params
     # e.g. params from jqGrid
@@ -16,16 +17,17 @@ module Gridify
     def update_from_params( params )
       symbolized_params = params.symbolize_keys
       params_to_rules symbolized_params
-      self.sort_by       = symbolized_params[:sidx] if symbolized_params[:sidx]
-      self.sort_order    = symbolized_params[:sord] if symbolized_params[:sord]
-      self.current_page  = symbolized_params[:page].to_i if symbolized_params[:page]
-      self.rows_per_page = symbolized_params[:rows].to_i if symbolized_params[:rows]
+      self.sort_by       = symbolized_params.delete :sidx if symbolized_params[:sidx]
+      self.sort_order    = symbolized_params.delete :sord if symbolized_params[:sord]
+      self.current_page  = symbolized_params.delete(:page).to_i if symbolized_params[:page]
+      self.rows_per_page = symbolized_params.delete(:rows).to_i if symbolized_params[:rows]
+      self.extra_finder_params = symbolized_params
     end
 
     # return find args (scope) for current settings
     def current_scope
       #debugger
-      find_args = {}
+      find_args = extra_finder_params
       if sort_by.present? && col = columns_hash[sort_by]
         if case_sensitive || !([:string, :text].include?(col.value_type))
           find_args[:order] = "#{sort_by} #{sort_order}" 
