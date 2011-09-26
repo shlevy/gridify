@@ -80,7 +80,9 @@ module Gridify
         
         save = ActiveRecord::Base.include_root_in_json
         ActiveRecord::Base.include_root_in_json = false
-        json = data.to_json
+        encoder = ActiveSupport::JSON::Encoding::Encoder.new only: (columns.map {|column| column.name})
+        json = Hash
+        json = json[data.map { |k, v| [k.to_s, encoder.as_json(v)] }]
         ActiveRecord::Base.include_root_in_json = save
         json
 
