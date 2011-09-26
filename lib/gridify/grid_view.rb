@@ -40,7 +40,7 @@ module Gridify
   
     # alias :to_s, :to_javascript
     def to_s( options={} )
-      to_javascript( options )
+      to_javascript( options ).html_safe
     end
             
     # ------------------
