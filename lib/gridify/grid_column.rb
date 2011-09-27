@@ -22,7 +22,7 @@ module Gridify
                   #:search_options,
                   :editable,                # true/false (false) or text, textarea, select, checkbox, password, button, image and file (based on value_type)
                   :edit_options,            # html input field options, depends on editable type (eg {"size" => 10, "maxlength" => 15}) see http://www.trirand.com/jqgridwiki/doku.php?id=wiki:common_rules
-                  :edit_type
+                  :edit_type,
                   :validations,             # jqGrid editrules (TODO derive from AR model validations) see http://www.trirand.com/jqgridwiki/doku.php?id=wiki:common_rules
                                             # "required" "integer" "email" "url" etc
                   :form_options,            # jqGrid formoptions for formatting input forms
