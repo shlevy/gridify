@@ -120,6 +120,29 @@ module Gridify
       presets ||= {}
       presets.stringify_keys!
       
+      association_columns = klass.reflect_on_all_associations.collect do |ar|
+        #debugger
+        name = ar.name.to_s
+        next if only.present? && !only.include?(name)
+        next if except.present? && except.include?(name)
+        edit = editable && 
+          # only edit accessible attributes
+          (klass.accessible_attributes.nil? || klass.accessible_attributes.include?(ar.name))
+        args = {
+          :ar_column => ar,
+          :name => name,
+          :value_type => ar.type,
+          :key => false,
+          :hidden => false,
+          :searchable => searchable,
+          :sortable => sortable,
+          :editable => edit
+        }
+
+        # create column with default args merged with options given for this column
+        GridColumn.new args.merge( presets[name]||{} )
+      end
+
       self.columns = klass.columns.collect do |ar|
         #debugger
         next if only.present? && !only.include?(ar.name)
@@ -141,7 +164,7 @@ module Gridify
 
         # create column with default args merged with options given for this column
         GridColumn.new args.merge( presets[ar.name]||{} )
-      end.compact      
+      end.concat(association_columns).compact      
     end
     
     
