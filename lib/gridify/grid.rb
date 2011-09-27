@@ -138,7 +138,7 @@ module Gridify
           editable: true,
           edit_type: :select,
           edit_options: {
-            dataUrl: url
+            dataUrl: url,
             disabled: !edit
           }
         }
