@@ -24,6 +24,7 @@ module Gridify
       build_model = options.delete(:build_model) == false ? false : true
       only = options.delete(:only)
       except = options.delete(:except)
+      include = options.delete(:include)
       col_presets = options.delete(:columns)
       
       # assign options
@@ -31,7 +32,7 @@ module Gridify
       
       # build columns from ActiveRecord model (klass)
       if klass.present? && build_model
-        @model = build_columns klass, only, except, col_presets
+        @model = build_columns klass, only, except, include, col_presets
       end
       
       instance_eval(&block) if block
@@ -112,35 +113,38 @@ module Gridify
     # generate list of columns based on AR model
     # option:  :only or :except
     #          :col_options  hash of hash of preset values for columns (eg from cookie) { :title => {:width => 98}}
-    def build_columns( klass, only, except, presets )
+    def build_columns( klass, only, except, include, presets )
       #debugger
       # stringify
       only = Array(only).map {|s| s.to_s }
       except = Array(except).map {|s| s.to_s }
       presets ||= {}
       presets.stringify_keys!
+      include ||= {}
       
-      association_columns = klass.reflect_on_all_associations.collect do |ar|
-        #debugger
-        name = ar.name.to_s
-        next if only.present? && !only.include?(name)
-        next if except.present? && except.include?(name)
+      association_columns = include.collect do |association, url|
+        ar = klass.reflect_on_association association
         edit = editable && 
           # only edit accessible attributes
           (klass.accessible_attributes.nil? || klass.accessible_attributes.include?(ar.name))
         args = {
-          :ar_column => ar,
-          :name => name,
-          :value_type => ar.type,
-          :key => false,
-          :hidden => false,
-          :searchable => searchable,
-          :sortable => sortable,
-          :editable => edit
+          ar_column: ar,
+          name: ar.name.to_s,
+          value_type: :integer,
+          key: false,
+          hidden: false,
+          searchable: false,
+          sortable: false,
+          editable: true,
+          edit_type: :select,
+          edit_options: {
+            dataUrl: url
+            disabled: !edit
+          }
         }
 
         # create column with default args merged with options given for this column
-        GridColumn.new args.merge( presets[name]||{} )
+        GridColumn.new args.merge( presets[ar.name.to_s]||{} )
       end
 
       self.columns = klass.columns.collect do |ar|
